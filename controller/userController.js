@@ -77,8 +77,41 @@ exports.userLogin = async (req, res, next) => {
       }
     );
 
+    const user_data = {
+      name: user.name,
+      email: user.email,
+      _id: user._id,
+    };
+
     res.status(200).json({
       token,
+      user_data,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// Get user List by search
+exports.userList = async (req, res, next) => {
+  try {
+    const keyword = req.query.search
+      ? {
+          $or: [
+            { name: { $regex: req.query.search, $options: "i" } },
+            { email: { $regex: req.query.search, $options: "i" } },
+          ],
+        }
+      : {};
+
+    const user = await User.find(keyword);
+
+    const user_list = user?.filter(
+      (_list) => _list._id.toString() !== req.user.toString() && _list
+    );
+
+    res.json({
+      user_list,
     });
   } catch (error) {
     next(error);

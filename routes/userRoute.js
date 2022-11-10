@@ -2,9 +2,11 @@ const express = require("express");
 const userController = require("../controller/userController");
 const { body } = require("express-validator");
 const User = require("../model/userModel");
+const isAuth = require("../middleware/isAuth");
 
 const route = express.Router();
 
+//
 route.post(
   "/account",
   [
@@ -50,5 +52,8 @@ route.post(
   ],
   userController.userLogin
 );
+
+// Searching
+route.get("/list", isAuth, userController.userList);
 
 module.exports = route;
